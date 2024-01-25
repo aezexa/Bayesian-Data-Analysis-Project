@@ -1,0 +1,73 @@
+---
+title: "Bayesian Data Analysis Project"
+bibliography: ../references.bib
+author:
+    - Alireza Honarvar
+    - Chen Xu
+    - Nathaniel
+format:
+  html:
+    toc: true
+    code-tools: true
+    code-line-numbers: true
+    number-sections: true
+    mainfont: Georgia, serif
+    page-layout: article
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    include-in-header:
+      - text: \newcommand{\rhat}{\hat{R}}
+---
+
+```{r, echo=FALSE, output=FALSE}
+#| label: imports and config parameters 
+library(tidyr)
+library(dplyr)
+library(tools)
+library(ggplot2)
+library(bayesplot)
+library(ggdist)
+library(posterior)
+library(priorsense)
+library(cmdstanr)
+library(brms)
+library(rstan)
+options(brms.backend="cmdstanr")
+options(brms.file_refit="on_change")
+
+
+# Set more readable themes with bigger font for plotting packages
+ggplot2::theme_set(theme_minimal(base_size = 14))
+bayesplot::bayesplot_theme_set(theme_minimal(base_size = 14))
+
+# font size for plots that are displayed side by side
+font_size_side_by_side = 20
+
+setwd("/home/alireza/Documents/studium/courses/bayesian_data_analysis/project/report")
+
+# read data
+data_orig = read.table(
+  "../data/oktoberfest_1985_2019.csv",
+  header = TRUE,
+  sep=","
+)
+
+# Preprocess data
+# ..change column names to be more compact
+colnames(data_orig)[c(1,2,3,5,6,7,8)] = 
+  c("year", "duration", "visitors", "price_b", "cons_b", "price_c", "cons_c")
+# ..change consumption unit from hectoliters to liters and visitor unit to people
+data_orig$cons_b <- data_orig$cons_b * 100
+data_orig$visitors <- data_orig$visitors * 10^6
+# ..calculate per_capita values
+data_orig$cons_cap_b <- data_orig$cons_b / (data_orig$visitors)
+data_orig$cons_cap_c <- data_orig$cons_c / (data_orig$visitors)
+
+data_orig$cons_cap_day_b <- data_orig$cons_cap_b / data_orig$duration
+data_orig$cons_cap_day_c <- data_orig$cons_cap_c / data_orig$duration
+
+data_orig$exp_cap_day_b <- data_orig$cons_cap_day_b * data_orig$price_b 
+data_orig$exp_cap_day_c <- data_orig$cons_cap_day_c * data_orig$price_c 
+```
