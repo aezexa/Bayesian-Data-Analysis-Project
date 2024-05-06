@@ -30,7 +30,7 @@ library(ggplot2)
 library(bayesplot)
 library(ggdist)
 library(posterior)
-library(priorsense)
+#library(priorsense)
 library(cmdstanr)
 library(brms)
 library(rstan)
@@ -73,3 +73,95 @@ print(head(data))
 # data_orig$exp_cap_day_b <- data_orig$cons_cap_day_b * data_orig$price_b 
 # data_orig$exp_cap_day_c <- data_orig$cons_cap_day_c * data_orig$price_c 
 ```
+
+# Introduction
+
+## Motivation
+
+To know the behavior and traits of storms is very important especially hurricanes. For one, they are the most destructive natural calamities that ravage infrastructure, kill people and disrupt economies on a massive scale. Secondly, in line with growing anxiety about global warming it becomes more necessary to understand these storms better in terms of their inner workings and possible responses to altered surroundings. It is also true that if we have more knowledge about them we can prepare ourselves adequately against such disasters while responding appropriately when they occur too.
+
+## Problem
+
+We want to analyze the NOAA Atlantic hurricane dataset to get some insights on what factors (for example tropical storm and hurricane diameter) have an effect on the maximum wind speed. This analysis can provide valuable information for future cases where we can predict the intensity of a storm by its factors.
+
+## Main modeling idea
+
+## Illustrative figures
+
+# Description of data and the analysis problem
+
+The dataset used for this project is the NOAA Atlantic hurricane database best track data (HURDAT2) which contains data from 1975 to 2022. This dataset is from dplyr package in R datasets, accessed from https://vincentarelbundock.github.io/Rdatasets/datasets.html. The CSV (https://vincentarelbundock.github.io/Rdatasets/csv/dplyr/storms.csv) and DOC (https://vincentarelbundock.github.io/Rdatasets/doc/dplyr/storms.html) are also accessibly from the given links (last accessed May 6th 2024).
+
+Our focus is the data from 2004 to 2022 since only these rows contain the diameter of the tropical storm and hurricane. As far as we researched, this case study has not been done before.
+
+This dataset contains 19537 rows in total and 13 columns:
+
+-   Name (name) {string}
+
+    -   Storm Name
+
+-   Year (year) {numeric}
+
+-   Month (month) {numeric}
+
+-   Day (day) {numeric}
+
+-   Hour (hour) {numeric}
+
+    -   Hour of report (in UTC)
+
+-   Latitude (lat) {numeric}
+
+    -   Latitude of storm center
+
+-   Longitude (long) {numeric}
+
+    -   Longitude of storm center
+
+-   Status (status) {string}
+
+    -   Storm classification (Tropical Depression, Tropical Storm, or Hurricane)
+
+-   Category (category) {NA/numeric}
+
+    -   Saffir-Simpson hurricane category calculated from wind speed. (NA: not a hurricane, 1: 64+ knots, 2: 83+ knots, 3. 96+ knots, 4: 113+ knots, 5: 137+ knots)
+
+-   Wind (wind) {numeric}
+
+    -   Storm's maximum sustained wind speed (in knots)
+
+-   Pressure (pressure) {numeric}
+
+    -   Air pressure at the storm's center (in millibars)
+
+-   Tropical storm force diameter (tropicalstorm_force_diameter) {NA/numeric}
+
+    -   Diameter (in nautical miles) of the area experiencing tropical storm strength winds (34 knots or above). Only available starting in 2004.
+
+-   Hurricane force diameter (hurricane_force_diameter) {NA/numeric}
+
+    -   Diameter (in nautical miles) of the area experiencing hurricane strength winds (64 knots or above). Only available starting in 2004.
+
+# Description of models
+
+# Weakly informative priors
+
+# Stan code
+
+# MCMC inference
+
+# Convergence diagnostic
+
+# Posterior predictive checks
+
+# Predictive performance assessment
+
+# Sensitivity analysis
+
+# Model comparison
+
+# Discussion of issues and potential improvements
+
+# Conclusion and what was learned
+
+# Self-reflection of what we learned
