@@ -30,7 +30,7 @@ library(ggplot2)
 library(bayesplot)
 library(ggdist)
 library(posterior)
-library(priorsense)
+# library(priorsense)
 library(cmdstanr)
 library(brms)
 library(rstan)
@@ -56,6 +56,7 @@ data = read.table(
 
 print(head(data))
 
+
 # Preprocess data
 # ..change column names to be more compact
 # colnames(data_orig)[c(1,2,3,5,6,7,8)] = 
@@ -73,3 +74,50 @@ print(head(data))
 # data_orig$exp_cap_day_b <- data_orig$cons_cap_day_b * data_orig$price_b 
 # data_orig$exp_cap_day_c <- data_orig$cons_cap_day_c * data_orig$price_c 
 ```
+
+```{r}
+data = na.omit(data)
+```
+
+```{r}
+# Scatter plot using ggplot2
+ggplot(data, aes(y = wind, x = tropicalstorm_force_diameter)) +
+  geom_point(alpha = 0.5, color = "blue") + 
+  geom_smooth(method = "lm", color = "grey", se = FALSE) +
+  labs(title = "Scatter Plot of Wind vs Tropical Storm Force Diameter",
+       y = "Wind (knots)",
+       x = "Tropical Storm Force Diameter (nm)") +
+  theme_minimal()  # A minimalistic theme
+```
+
+```{r}
+# Scatter plot using ggplot2
+ggplot(data, aes(y = wind, x = hurricane_force_diameter)) +
+  geom_point(alpha = 0.5, color = "red") +
+  geom_smooth(method = "lm", color = "blue", se = FALSE) +
+  labs(title = "Scatter Plot of Wind vs Hurricane Force Diameter",
+       y = "Wind (knots)",
+       x = "Hurricane Force Diameter (nm)") +
+  theme_minimal()  # A minimalistic theme
+```
+```{r}
+ggplot(data, aes(x = tropicalstorm_force_diameter, y = hurricane_force_diameter)) +
+  geom_point(alpha = 0.5, color = "green") +
+  geom_smooth(method = "lm", color = "blue", se = FALSE) +
+  labs(title = "Scatter Plot of Tropical Storm vs Hurricane Force Diameter",
+       x = "Tropical Storm Force Diameter (nm)",
+       y = "Hurricane Force Diameter (nm)") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(data, aes(x = wind)) +
+  geom_histogram(binwidth = 5, fill = "blue", color = "black") +  # Adjust binwidth as needed
+  labs(title = "Histogram of Wind Speeds",
+       x = "Wind Speed (knots)",
+       y = "Frequency") +
+  theme_minimal()
+```
+
+
+
