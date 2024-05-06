@@ -30,7 +30,7 @@ library(ggplot2)
 library(bayesplot)
 library(ggdist)
 library(posterior)
-#library(priorsense)
+# library(priorsense)
 library(cmdstanr)
 library(brms)
 library(rstan)
@@ -55,6 +55,7 @@ data = read.table(
 )
 
 print(head(data))
+
 
 # Preprocess data
 # ..change column names to be more compact
@@ -165,3 +166,51 @@ This dataset contains 19537 rows in total and 13 columns:
 # Conclusion and what was learned
 
 # Self-reflection of what we learned
+
+```{r}
+# Remove rows with missing values
+data = na.omit(data)
+```
+
+```{r}
+# Scatter plot using ggplot2
+ggplot(data, aes(y = wind, x = tropicalstorm_force_diameter)) +
+  geom_point(alpha = 0.5, color = "blue") + 
+  geom_smooth(method = "lm", color = "grey", se = FALSE) +
+  labs(title = "Scatter Plot of Wind vs Tropical Storm Force Diameter",
+       y = "Wind (knots)",
+       x = "Tropical Storm Force Diameter (nm)") +
+  theme_minimal()
+```
+
+```{r}
+# Scatter plot using ggplot2
+ggplot(data, aes(y = wind, x = hurricane_force_diameter)) +
+  geom_point(alpha = 0.5, color = "red") +
+  geom_smooth(method = "lm", color = "blue", se = FALSE) +
+  labs(title = "Scatter Plot of Wind vs Hurricane Force Diameter",
+       y = "Wind (knots)",
+       x = "Hurricane Force Diameter (nm)") +
+  theme_minimal()
+```
+```{r}
+ggplot(data, aes(x = tropicalstorm_force_diameter, y = hurricane_force_diameter)) +
+  geom_point(alpha = 0.5, color = "green") +
+  geom_smooth(method = "lm", color = "blue", se = FALSE) +
+  labs(title = "Scatter Plot of Tropical Storm vs Hurricane Force Diameter",
+       x = "Tropical Storm Force Diameter (nm)",
+       y = "Hurricane Force Diameter (nm)") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(data, aes(x = wind)) +
+  geom_histogram(binwidth = 5, fill = "blue", color = "black") +  # Adjust binwidth as needed
+  labs(title = "Histogram of Wind Speeds",
+       x = "Wind Speed (knots)",
+       y = "Frequency") +
+  theme_minimal()
+```
+
+
+
