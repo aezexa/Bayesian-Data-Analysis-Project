@@ -169,23 +169,107 @@ This dataset contains 19537 rows in total and 13 columns:
 
 ```{r}
 # Remove rows with missing values
-data = na.omit(data)
+# data$category <- ifelse(is.na(data$category), 0, data$category)
+data_complete = data
+data <- data[data$year >= 2004, ]
+only_stormy_data <- data[data$tropicalstorm_force_diameter > 0, ]
+only_hurricane_data <- data[data$hurricane_force_diameter > 0, ]
+# data = na.omit(data)
 ```
 
 ```{r}
 # Scatter plot using ggplot2
-ggplot(data, aes(y = wind, x = tropicalstorm_force_diameter)) +
+ggplot(only_stormy_data, aes(y = wind, x = tropicalstorm_force_diameter)) +
   geom_point(alpha = 0.5, color = "blue") + 
   geom_smooth(method = "lm", color = "grey", se = FALSE) +
   labs(title = "Scatter Plot of Wind vs Tropical Storm Force Diameter",
        y = "Wind (knots)",
        x = "Tropical Storm Force Diameter (nm)") +
+  #scale_x_log10() +  # Adding log scale to x-axis
+  #scale_y_log10() +  # Adding log scale to y-axis
+  theme_minimal()
+```
+```{r}
+# Scatter plot using ggplot2
+ggplot(only_stormy_data, aes(y = wind, x = tropicalstorm_force_diameter)) +
+  geom_point(alpha = 0.5, aes(color = as.factor(category))) + 
+  geom_smooth(method = "lm", color = "grey", se = FALSE) +
+  labs(title = "Scatter Plot of Wind vs Tropical Storm Force Diameter",
+       y = "Wind (knots)",
+       x = "Tropical Storm Force Diameter (nm)",
+      color = "Category")  +
+  #scale_x_log10() +  # Adding log scale to x-axis
+  #scale_y_log10() +  # Adding log scale to y-axis
+  theme_minimal()
+```
+```{r}
+# Filter the data to include only the rows where wind is at its maximum for each diameter value
+max_data <- only_stormy_data %>%
+  group_by(tropicalstorm_force_diameter) %>%
+  filter(wind == max(wind)) %>%
+  ungroup()
+
+# Plot the scatter plot with the fitted line for the maximum wind values
+ggplot(max_data, aes(x = tropicalstorm_force_diameter, y = wind)) +
+  geom_point(aes(color = as.factor(category)), alpha = 0.5) + 
+  geom_smooth(method = "lm", color = "red", se = FALSE) +  # Fit line for maximum wind values
+  labs(title = "Scatter Plot of Wind vs Tropical Storm Force Diameter",
+       y = "ln(Max Wind)",
+       x = "ln(Tropical Storm Force Diameter)") +
+  theme_minimal()
+
+```
+
+
+```{r}
+# Scatter plot using ggplot2
+ggplot(only_stormy_data, aes(y = log(wind), x = log(tropicalstorm_force_diameter))) +
+  geom_point(alpha = 0.5, color = "blue") + 
+  geom_smooth(method = "lm", color = "grey", se = FALSE) +
+  labs(title = "Scatter Plot of Wind vs Tropical Storm Force Diameter",
+       y = "Wind (knots)",
+       x = "Tropical Storm Force Diameter (nm)") +
+  #scale_x_log10() +  # Adding log scale to x-axis
+  #scale_y_log10() +  # Adding log scale to y-axis
+  theme_minimal()
+```
+```{r}
+ggplot(only_stormy_data, aes(y = log(wind), x = log(tropicalstorm_force_diameter))) +
+  geom_point(aes(color = as.factor(category)), alpha = 0.5) + 
+  geom_smooth(method = "lm", color = "grey", se = FALSE) +
+  labs(title = "Scatter Plot of Wind vs Tropical Storm Force Diameter",
+       y = "ln(Wind)",
+       x = "ln(Tropical Storm Force Diameter)",
+       color = "Category") +
+  #scale_x_log10() +  # Adding log scale to x-axis
+  #scale_y_log10() +  # Adding log scale to y-axis
+  # scale_color_discrete(labels = c("0" = "0", "1" = "1")) +  # Rename the legend labels
   theme_minimal()
 ```
 
 ```{r}
+# Filter the data to include only the rows where wind is at its maximum for each diameter value
+max_data <- only_stormy_data %>%
+  group_by(tropicalstorm_force_diameter) %>%
+  filter(log(wind) == max(log(wind))) %>%
+  ungroup()
+
+# Plot the scatter plot with the fitted line for the maximum wind values
+ggplot(max_data, aes(x = log(tropicalstorm_force_diameter), y = log(wind))) +
+  geom_point(aes(color = as.factor(category)), alpha = 0.5) + 
+  geom_smooth(method = "lm", color = "red", se = FALSE) +  # Fit line for maximum wind values
+  labs(title = "Scatter Plot of Wind vs Tropical Storm Force Diameter",
+       y = "ln(Max Wind)",
+       x = "ln(Tropical Storm Force Diameter)") +
+  theme_minimal()
+
+```
+
+
+
+```{r}
 # Scatter plot using ggplot2
-ggplot(data, aes(y = wind, x = hurricane_force_diameter)) +
+ggplot(only_hurricane_data, aes(y = log(wind), x = log(hurricane_force_diameter))) +
   geom_point(alpha = 0.5, color = "red") +
   geom_smooth(method = "lm", color = "blue", se = FALSE) +
   labs(title = "Scatter Plot of Wind vs Hurricane Force Diameter",
@@ -194,7 +278,7 @@ ggplot(data, aes(y = wind, x = hurricane_force_diameter)) +
   theme_minimal()
 ```
 ```{r}
-ggplot(data, aes(x = tropicalstorm_force_diameter, y = hurricane_force_diameter)) +
+ggplot(only_stormy_data, aes(x = tropicalstorm_force_diameter, y = hurricane_force_diameter)) +
   geom_point(alpha = 0.5, color = "green") +
   geom_smooth(method = "lm", color = "blue", se = FALSE) +
   labs(title = "Scatter Plot of Tropical Storm vs Hurricane Force Diameter",
@@ -204,13 +288,66 @@ ggplot(data, aes(x = tropicalstorm_force_diameter, y = hurricane_force_diameter)
 ```
 
 ```{r}
-ggplot(data, aes(x = wind)) +
+ggplot(only_stormy_data, aes(x = wind)) +
   geom_histogram(binwidth = 5, fill = "blue", color = "black") +  # Adjust binwidth as needed
   labs(title = "Histogram of Wind Speeds",
        x = "Wind Speed (knots)",
        y = "Frequency") +
   theme_minimal()
 ```
+```{r}
+if (requireNamespace("ggplot2", quietly = TRUE)) {
+  library(ggplot2)
+  data %>%
+    filter(year >= 2000) %>%
+    ggplot(aes(long, lat, color = paste(year, name))) +
+    geom_path(show.legend = FALSE) +
+    facet_wrap(~year)
+}
+```
+
+```{r}
+if (requireNamespace("ggplot2", quietly = TRUE)) {
+  library(ggplot2)
+  only_stormy_data %>%
+    filter(year >= 2000) %>%
+    ggplot(aes(long, lat, color = paste(year, name))) +
+    geom_path(show.legend = FALSE) +
+    facet_wrap(~year)
+}
+```
+
+```{r}
+data%>%
+  group_by(category)%>%
+  summarise(avgWind = mean(wind)) %>%
+  ggplot(aes(x = category , y = avgWind)) +
+  geom_point() +
+  labs(x= "Category",
+       y= "Average Wind Speed (in knots)",
+       title = "Average Wind by Category of Storm") +
+  theme_minimal()
+```
 
 
-
+```{r}
+data%>%
+  ggplot(aes(x=as.factor(month))) +
+  geom_bar(aes(fill= as.factor(category))) +
+  labs(x= "Month",
+       y= "Number of Storms",
+       title = "Monthly Number of All Wind Reports by Category",
+       fill = "Category" ) +
+  theme_minimal()
+```
+```{r}
+data%>%
+  filter(!is.na(category)) %>%
+  ggplot(aes(x=as.factor(month))) +
+  geom_bar(aes(fill= as.factor(category))) +
+  labs(x= "Month",
+       y= "Number of Storms",
+       title = "Monthly Number of Storms (64+ knots) by Category",
+       fill = "Category" ) +
+  theme_minimal()
+```
