@@ -180,18 +180,6 @@ only_hurricane_data <- data[data$hurricane_force_diameter > 0, ]
 ```{r}
 # Scatter plot using ggplot2
 ggplot(only_stormy_data, aes(y = wind, x = tropicalstorm_force_diameter)) +
-  geom_point(alpha = 0.5, color = "blue") + 
-  geom_smooth(method = "lm", color = "grey", se = FALSE) +
-  labs(title = "Scatter Plot of Wind vs Tropical Storm Force Diameter",
-       y = "Wind (knots)",
-       x = "Tropical Storm Force Diameter (nm)") +
-  #scale_x_log10() +  # Adding log scale to x-axis
-  #scale_y_log10() +  # Adding log scale to y-axis
-  theme_minimal()
-```
-```{r}
-# Scatter plot using ggplot2
-ggplot(only_stormy_data, aes(y = wind, x = tropicalstorm_force_diameter)) +
   geom_point(alpha = 0.5, aes(color = as.factor(category))) + 
   geom_smooth(method = "lm", color = "grey", se = FALSE) +
   labs(title = "Scatter Plot of Wind vs Tropical Storm Force Diameter",
@@ -221,18 +209,6 @@ ggplot(max_data, aes(x = tropicalstorm_force_diameter, y = wind)) +
 ```
 
 
-```{r}
-# Scatter plot using ggplot2
-ggplot(only_stormy_data, aes(y = log(wind), x = log(tropicalstorm_force_diameter))) +
-  geom_point(alpha = 0.5, color = "blue") + 
-  geom_smooth(method = "lm", color = "grey", se = FALSE) +
-  labs(title = "Scatter Plot of Wind vs Tropical Storm Force Diameter",
-       y = "ln(Wind)",
-       x = "ln(Tropical Storm Force Diameter)",
-  #scale_x_log10() +  # Adding log scale to x-axis
-  #scale_y_log10() +  # Adding log scale to y-axis
-  theme_minimal())
-```
 ```{r}
 ggplot(only_stormy_data, aes(y = log(wind), x = log(tropicalstorm_force_diameter))) +
   geom_point(aes(color = as.factor(category)), alpha = 0.5) + 
@@ -264,19 +240,6 @@ ggplot(max_data, aes(x = log(tropicalstorm_force_diameter), y = log(wind))) +
        color = "Category") +
   theme_minimal()
 
-```
-
-
-
-```{r}
-# Scatter plot using ggplot2
-ggplot(only_hurricane_data, aes(y = log(wind), x = log(hurricane_force_diameter))) +
-  geom_point(alpha = 0.5, color = "red") +
-  geom_smooth(method = "lm", color = "blue", se = FALSE) +
-  labs(title = "Scatter Plot of Wind vs Hurricane Force Diameter",
-       y = "Wind (knots)",
-       x = "Hurricane Force Diameter (nm)") +
-  theme_minimal()
 ```
 
 ```{r}
@@ -312,28 +275,30 @@ ggplot(max_data, aes(x = log(hurricane_force_diameter), y = log(wind))) +
 
 ```{r}
 ggplot(only_stormy_data, aes(x = tropicalstorm_force_diameter, y = hurricane_force_diameter)) +
-  geom_point(alpha = 0.5, color = "green") +
+  geom_point(alpha = 0.5, aes(color = as.factor(category))) +
   geom_smooth(method = "lm", color = "blue", se = FALSE) +
   labs(title = "Scatter Plot of Tropical Storm vs Hurricane Force Diameter",
        x = "Tropical Storm Force Diameter (nm)",
-       y = "Hurricane Force Diameter (nm)") +
+       y = "Hurricane Force Diameter (nm)",
+       color = "Category") +
   theme_minimal()
 ```
 
 ```{r}
 ggplot(only_hurricane_data, aes(x = log(tropicalstorm_force_diameter), y = log(hurricane_force_diameter))) +
-  geom_point(alpha = 0.5, color = "green") +
+  geom_point(alpha = 0.5, aes(color = as.factor(category))) +
   geom_smooth(method = "lm", color = "blue", se = FALSE) +
   labs(title = "Scatter Plot of Tropical Storm vs Hurricane Force Diameter",
        x = "ln(Tropical Storm Force Diameter (nm))",
-       y = "ln(Hurricane Force Diameter (nm))") +
+       y = "ln(Hurricane Force Diameter (nm))",
+       color = "Category") +
   theme_minimal()
 ```
 
 
 ```{r}
 ggplot(only_stormy_data, aes(x = wind)) +
-  geom_histogram(binwidth = 5, fill = "blue", color = "black") +  # Adjust binwidth as needed
+  geom_histogram(binwidth = 5, aes(fill = as.factor(category)), color = "black") +  # Adjust binwidth as needed
   labs(title = "Histogram of Wind Speeds",
        x = "Wind Speed (knots)",
        y = "Frequency") +
