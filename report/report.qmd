@@ -170,12 +170,25 @@ This dataset contains 19537 rows in total and 13 columns:
 ```{r}
 # Remove rows with missing values
 # data$category <- ifelse(is.na(data$category), 0, data$category)
+# Important filter: Dropping bad data. Data which are hurricane, but have NA category (Impossible).
+data = data[which(!(data$hurricane_force_diameter > 0 & is.na(data$category))), ]
+#data <- subset(data, !(hurricane_force_diameter > 0 & is.na(category)))
 data_complete = data
-data <- data[data$year >= 2004, ]
-only_stormy_data <- data[data$tropicalstorm_force_diameter > 0, ]
-only_hurricane_data <- data[data$hurricane_force_diameter > 0, ]
+data <- data[which(data$year >= 2004), ]
+only_stormy_data <- data[which(data$tropicalstorm_force_diameter > 0), ]
+only_hurricane_data <- data[which(data$hurricane_force_diameter > 0), ]
 # data = na.omit(data)
 ```
+
+```{r}
+# unique_values <- unique(data$category)
+# print("Categories:")
+# print(unique_values)
+# unique_values <- unique(data$status)
+# print("Status:")
+# print(unique_values)
+```
+
 
 ```{r}
 # Scatter plot using ggplot2
@@ -248,8 +261,8 @@ ggplot(only_hurricane_data, aes(y = log(wind), x = log(hurricane_force_diameter)
   geom_point(alpha = 0.5, aes(color = as.factor(category))) +
   geom_smooth(method = "lm", color = "blue", se = FALSE) +
   labs(title = "Scatter Plot of Wind vs Hurricane Force Diameter",
-       y = "Wind (knots)",
-       x = "Hurricane Force Diameter (nm)",
+       y = "ln(Wind (knots))",
+       x = "ln(Hurricane Force Diameter (nm))",
        color = "Category") +
   theme_minimal()
 ```
@@ -274,14 +287,14 @@ ggplot(max_data, aes(x = log(hurricane_force_diameter), y = log(wind))) +
 
 
 ```{r}
-ggplot(only_stormy_data, aes(x = tropicalstorm_force_diameter, y = hurricane_force_diameter)) +
-  geom_point(alpha = 0.5, aes(color = as.factor(category))) +
-  geom_smooth(method = "lm", color = "blue", se = FALSE) +
-  labs(title = "Scatter Plot of Tropical Storm vs Hurricane Force Diameter",
-       x = "Tropical Storm Force Diameter (nm)",
-       y = "Hurricane Force Diameter (nm)",
-       color = "Category") +
-  theme_minimal()
+#ggplot(only_stormy_data, aes(x = tropicalstorm_force_diameter, y = hurricane_force_diameter)) +
+#  geom_point(alpha = 0.5, aes(color = as.factor(category))) +
+#  geom_smooth(method = "lm", color = "blue", se = FALSE) +
+#  labs(title = "Scatter Plot of Tropical Storm vs Hurricane Force Diameter",
+#       x = "Tropical Storm Force Diameter (nm)",
+#       y = "Hurricane Force Diameter (nm)",
+#       color = "Category") +
+#  theme_minimal()
 ```
 
 ```{r}
