@@ -374,3 +374,115 @@ data%>%
        fill = "Category" ) +
   theme_minimal()
 ```
+
+```{r}
+stan_code_hierarchical <- "
+data {
+  int<lower=0> N;  // Number of data points
+  vector[N] log_max_wind;  // ln(max_wind)
+  vector[N] log_trop_diam;  // ln(trop_diam) or ln(hurricane_diam)
+}
+
+parameters {
+  real mu;  // Mean parameter
+  real<lower=0> sigma_group;  // Group-level standard deviation
+  real<lower=0> sigma_obs;  // Observation-level standard deviation
+  vector[N] alpha;  // Group-specific intercept
+  real beta;  // Slope parameter
+}
+
+model {
+  // Priors
+  mu ~ normal(0, 10);  // Prior on mean
+  sigma_group ~ cauchy(0, 2.5);  // Prior on group-level standard deviation
+  sigma_obs ~ cauchy(0, 2.5);  // Prior on observation-level standard deviation
+  
+  // Hierarchical model
+  alpha ~ normal(mu, sigma_group);  // Group-specific intercepts
+  
+  // Likelihood
+  log_max_wind ~ normal(alpha + beta * log_trop_diam, sigma_obs);  // Likelihood
+}
+
+generated quantities {
+  vector[N] log_max_wind_rep;
+  for (i in 1:N) {
+    log_max_wind_rep[i] = normal_rng(alpha[i] + beta * log_trop_diam[i], sigma_obs);
+  }
+}
+"
+
+stan_data <- list(
+  N = nrow(only_stormy_data),
+  log_max_wind = max(log(only_stormy_data$wind)),
+  log_trop_diam = max(log(only_stormy_data$tropicalstorm_force_diameter))  # or log_hurricane_diam
+)
+
+# Fit the hierarchical Gaussian model
+fit_hierarchical <- stan(model_code = stan_code_hierarchical, data = stan_data)
+
+# Print summary of the fitted model
+print(fit_hierarchical)
+
+# Plot the posterior distribution of parameters if needed
+plot(fit_hierarchical)
+
+# Extract posterior samples if needed
+posterior_samples <- extract(fit_hierarchical)
+```
+
+```{r}
+
+stan_code_non_hierarchical <- "
+data {
+  int<lower=0> N;  // Number of data points
+  vector[N] log_max_wind;  // ln(max_wind)
+  vector[N] log_trop_diam;  // ln(trop_diam) or ln(hurricane_diam)
+}
+
+parameters {
+  real mu;  // Mean parameter
+  real<lower=0> sigma_obs;  // Observation-level standard deviation
+  real beta;  // Slope parameter
+}
+
+model {
+  // Priors
+  mu ~ normal(0, 10);  // Prior on mean
+  sigma_obs ~ cauchy(0, 2.5);  // Prior on observation-level standard deviation
+  beta ~ normal(0, 1);  // Prior on slope
+  
+  // Likelihood
+  log_max_wind ~ normal(mu + beta * log_trop_diam, sigma_obs);  // Likelihood
+}
+
+generated quantities {
+  vector[N] log_max_wind_rep;
+  for (i in 1:N) {
+    log_max_wind_rep[i] = normal_rng(mu + beta * log_trop_diam[i], sigma_obs);
+  }
+}
+"
+
+
+stan_data <- list(
+  N = nrow(data),
+  log_max_wind = data$log_max_wind,
+  log_trop_diam = data$log_trop_diam  # or log_hurricane_diam
+)
+
+# Fit the non-hierarchical Gaussian model
+fit_non_hierarchical <- stan(model_code = stan_code_non_hierarchical, data = stan_data)
+
+# Print summary of the fitted model
+print(fit_non_hierarchical)
+
+# Plot the posterior distribution of parameters if needed
+plot(fit_non_hierarchical)
+
+# Extract posterior samples if needed
+posterior_samples_non_hierarchical <- extract(fit_non_hierarchical)
+
+```
+
+
